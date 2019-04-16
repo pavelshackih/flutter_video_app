@@ -53,8 +53,8 @@ Widget _buildEmptyScreen(BuildContext context) {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Icon(
-          FontAwesomeIcons.mehRollingEyes,
-          color: Colors.black54,
+          FontAwesomeIcons.cameraRetro,
+          color: Colors.blueGrey,
           size: 72,),
         Padding(
           padding: const EdgeInsets.all(8.0),
@@ -68,5 +68,5 @@ Widget _buildEmptyScreen(BuildContext context) {
         )
       ],
     ),
-  )
+  );
 }
