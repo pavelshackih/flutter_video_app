@@ -33,7 +33,7 @@ class _CameraScreenState extends State<CameraScreen>
     });
 
     _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
     var beginColor = _isRecording ? Colors.red : Colors.white;
     var endColor = _isRecording ? Colors.white : Colors.red;
     _colorTween = ColorTween(begin: beginColor, end: endColor)
@@ -47,11 +47,9 @@ class _CameraScreenState extends State<CameraScreen>
     }
     return Stack(
       children: [
-        Positioned.fill(
-          child: AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: CameraPreview(_controller),
-          ),
+        AspectRatio(
+          aspectRatio: _controller.value.aspectRatio,
+          child: CameraPreview(_controller),
         ),
         Positioned(
           bottom: 0,
@@ -137,7 +135,7 @@ class _CameraScreenState extends State<CameraScreen>
 
     final currentTime = DateTime.now().millisecondsSinceEpoch.toString();
     final extDir = await getExternalStorageDirectory();
-    final dirPath = '${extDir.path}/Videos/';
+    final dirPath = '${extDir.path}/${CameraApi.SAVE_DIR}/';
     await Directory(dirPath).create(recursive: true);
     final filePath = '$dirPath/$currentTime.mp4';
     if (_controller.value.isRecordingVideo) {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_video_app/camera_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:flutter_video_app/camera_api.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -54,17 +55,15 @@ Widget _buildEmptyScreen(BuildContext context) {
       children: <Widget>[
         Icon(
           FontAwesomeIcons.cameraRetro,
-          color: Colors.blueGrey,
-          size: 72,),
+          color: Theme.of(context).accentColor,
+          size: 72,
+        ),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
           child: Text(
-            "Пока список с видео пуст, попробуйте записть что-нибудь!",
+            "Список видео пуст.\nПопробуйте для начала записать что-нибудь!\nВидео будут сохраняться в директорию: ${CameraApi.SAVE_DIR}",
             textAlign: TextAlign.center,
-            style: Theme
-                .of(context)
-                .textTheme
-                .title,),
+          ),
         )
       ],
     ),

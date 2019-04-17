@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 
 class CameraApi {
+  static const String SAVE_DIR = "DemoVideoApp";
   // singleton for simplicity
   static CameraApi _instance;
 

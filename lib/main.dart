@@ -13,7 +13,9 @@ class VideoApp extends StatelessWidget {
     return MaterialApp(
       title: 'Video App',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: Colors.blue,
+        primaryColor: Colors.blue,
+        accentColor: Colors.blueAccent
       ),
       home: HomeScreen(),
     );
