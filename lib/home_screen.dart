@@ -59,9 +59,17 @@ Widget _buildEmptyScreen(BuildContext context) {
           size: 72,
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+          padding: const EdgeInsets.all(8.0),
           child: Text(
-            "Список видео пуст.\nПопробуйте для начала записать что-нибудь!\nВидео будут сохраняться в директорию: ${CameraApi.SAVE_DIR}",
+            "Список видео пуст.",
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.title,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),
+          child: Text(
+            "Попробуйте для начала записать что-нибудь!\nВидео файлы будут сохраняться в директорию: ${CameraApi.SAVE_DIR}",
             textAlign: TextAlign.center,
           ),
         )

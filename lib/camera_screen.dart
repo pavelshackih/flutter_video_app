@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_video_app/camera_api.dart';
+import 'package:flutter_video_app/storage_api.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -47,41 +48,47 @@ class _CameraScreenState extends State<CameraScreen>
     }
     return Stack(
       children: [
-        AspectRatio(
-          aspectRatio: _controller.value.aspectRatio,
-          child: CameraPreview(_controller),
+        Center(
+          child: AspectRatio(
+            aspectRatio: _controller.value.aspectRatio,
+            child: CameraPreview(_controller),
+          ),
         ),
         Positioned(
           bottom: 0,
           left: 0,
           right: 0,
-          child: Container(
-            color: Colors.black26,
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: AnimatedBuilder(
-                  animation: _animationController,
-                  builder: (context, child) {
-                    return FlatButton(
-                      padding: EdgeInsets.all(8),
-                      onPressed: () {
-                        _onRecordClick();
-                      },
-                      shape: CircleBorder(),
-                      child: Container(
-                        width: 64,
-                        height: 64,
-                        decoration: BoxDecoration(
-                          color: _colorTween.value,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    );
-                  }),
-            ),
-          ),
+          child: _buildRecordButton(context),
         ),
       ],
+    );
+  }
+
+  Widget _buildRecordButton(BuildContext context) {
+    return Container(
+      color: Colors.black26,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: AnimatedBuilder(
+            animation: _animationController,
+            builder: (context, child) {
+              return FlatButton(
+                padding: EdgeInsets.all(8),
+                onPressed: () {
+                  _onRecordClick();
+                },
+                shape: CircleBorder(),
+                child: Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    color: _colorTween.value,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              );
+            }),
+      ),
     );
   }
 
@@ -135,7 +142,7 @@ class _CameraScreenState extends State<CameraScreen>
 
     final currentTime = DateTime.now().millisecondsSinceEpoch.toString();
     final extDir = await getExternalStorageDirectory();
-    final dirPath = '${extDir.path}/${CameraApi.SAVE_DIR}/';
+    final dirPath = '${extDir.path}/${StorageApi.SAVE_DIR}/';
     await Directory(dirPath).create(recursive: true);
     final filePath = '$dirPath/$currentTime.mp4';
     if (_controller.value.isRecordingVideo) {
