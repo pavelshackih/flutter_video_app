@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_video_app/api/camera_api.dart';
 import 'package:flutter_video_app/api/storage_api.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -24,7 +23,7 @@ class _CameraScreenState extends State<CameraScreen>
     super.initState();
     _isRecording = false;
 
-    var camera = CameraApi.getInstance().getCameras()[0];
+    final camera = null;
     _controller = CameraController(camera, ResolutionPreset.high);
     _controller.initialize().then((_) {
       if (!mounted) {
@@ -35,8 +34,8 @@ class _CameraScreenState extends State<CameraScreen>
 
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
-    var beginColor = _isRecording ? Colors.red : Colors.white;
-    var endColor = _isRecording ? Colors.white : Colors.red;
+    final beginColor = _isRecording ? Colors.red : Colors.white;
+    final endColor = _isRecording ? Colors.white : Colors.red;
     _colorTween = ColorTween(begin: beginColor, end: endColor)
         .animate(_animationController);
   }

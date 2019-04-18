@@ -14,9 +14,14 @@ class StorageApi {
   }
 
   Future<Directory> getVideoDir() async {
-    final extDir = await getExternalStorageDirectory();
-    final dirPath = "${extDir.path}/$SAVE_DIR";
-    return await Directory(dirPath).create(recursive: true);
+    Directory extDir;
+    try {
+      extDir = await getExternalStorageDirectory();
+      final dirPath = "${extDir.path}/$SAVE_DIR";
+      return await Directory(dirPath).create(recursive: true);
+    } on FileSystemException catch (e) {
+      throw StoragePermissionDeniedException(e.message);
+    }
   }
 
   String _getTimestamp() => DateTime.now().millisecondsSinceEpoch.toString();

@@ -7,12 +7,14 @@ class ApiProvider extends InheritedWidget {
   final CameraApi cameraApi;
   final StorageApi storageApi;
 
-  ApiProvider(this.cameraApi, this.storageApi, {Key key, Widget child});
+  ApiProvider(this.cameraApi, this.storageApi, {Key key, Widget child})
+      : super(key: key, child: child);
 
   @override
   bool updateShouldNotify(InheritedWidget oldWidget) => false;
 
-  static Widget newInstance(Widget wrapped) => ApiProvider(CameraApi(), StorageApi(), child: wrapped);
+  static Widget newInstance(Widget wrapped) =>
+      ApiProvider(CameraApi(), StorageApi(), child: wrapped);
 
   static ApiProvider of(BuildContext context) {
     return (context.inheritFromWidgetOfExactType(ApiProvider) as ApiProvider);
