@@ -1,15 +1,6 @@
 import 'package:camera/camera.dart';
 
 class CameraApi {
-  // singleton for simplicity
-  static CameraApi _instance;
-
-  static CameraApi getInstance() {
-    if (_instance == null) {
-      _instance = CameraApi();
-    }
-    return _instance;
-  }
 
   List<CameraDescription> _cameras;
 

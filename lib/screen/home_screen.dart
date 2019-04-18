@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_video_app/camera_screen.dart';
+import 'package:flutter_video_app/screen/camera_screen.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:flutter_video_app/camera_api.dart';
+import 'package:flutter_video_app/api/storage_api.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -69,7 +69,7 @@ Widget _buildEmptyScreen(BuildContext context) {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),
           child: Text(
-            "Попробуйте для начала записать что-нибудь!\nВидео файлы будут сохраняться в директорию: ${CameraApi.SAVE_DIR}",
+            "Попробуйте для начала записать что-нибудь!\nВидео файлы будут сохраняться в директорию: ${StorageApi.SAVE_DIR}",
             textAlign: TextAlign.center,
           ),
         )
