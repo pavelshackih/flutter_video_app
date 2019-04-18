@@ -6,8 +6,9 @@ class Video {
   const Video({this.pathToThumbnail, this.pathToVideo});
 }
 
-class StoragePermissionDeniedException implements Exception {
-  final String cause;
-  StoragePermissionDeniedException(this.cause);
-  
+class PermissionDeniedException implements Exception {
+  final AppPermission cause;
+  PermissionDeniedException(this.cause);
 }
+
+enum AppPermission { storage, camera, mic }

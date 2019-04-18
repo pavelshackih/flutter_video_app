@@ -19,8 +19,8 @@ class StorageApi {
       extDir = await getExternalStorageDirectory();
       final dirPath = "${extDir.path}/$SAVE_DIR";
       return await Directory(dirPath).create(recursive: true);
-    } on FileSystemException catch (e) {
-      throw StoragePermissionDeniedException(e.message);
+    } on FileSystemException {
+      throw PermissionDeniedException(AppPermission.storage);
     }
   }
 
@@ -36,6 +36,7 @@ class StorageApi {
     return await dir
         .list()
         .where((file) => file.path.endsWith(VIDEO_EXT) && file is File)
+        .map((file) => file as File)
         .toList();
   }
 
