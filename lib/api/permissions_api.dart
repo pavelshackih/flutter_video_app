@@ -12,6 +12,12 @@ class PermissionsApi {
   Future<bool> isRecordAudioGranted() =>
       _isPermissionGranted(PermissionGroup.microphone);
 
+  Future<bool> isAllPermissionsGranted() async {
+    return await isStorageGranted() &&
+        await isCameraGranted() &&
+        await isRecordAudioGranted();
+  }
+
   Future<bool> _isPermissionGranted(PermissionGroup group) async {
     final result = await _handler.checkPermissionStatus(group);
     return result == PermissionStatus.granted;

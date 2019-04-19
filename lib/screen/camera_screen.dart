@@ -3,8 +3,20 @@ import 'dart:io';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_video_app/api/storage_api.dart';
+import 'package:flutter_video_app/app.dart';
+import 'package:flutter_video_app/bloc/camera_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_video_app/utils/common_widgets.dart';
+
+class CameraRoot extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider<CameraBloc>(
+      creator: (context, bag) => CameraBloc(),
+      child: CameraScreen(),
+    );
+  }
+}
 
 class CameraScreen extends StatefulWidget {
   @override
@@ -13,7 +25,7 @@ class CameraScreen extends StatefulWidget {
 
 class _CameraScreenState extends State<CameraScreen>
     with SingleTickerProviderStateMixin {
-  CameraController _controller;
+  CameraBloc _bloc;
   bool _isRecording;
   AnimationController _animationController;
   Animation _colorTween;
@@ -21,16 +33,8 @@ class _CameraScreenState extends State<CameraScreen>
   @override
   void initState() {
     super.initState();
+    _bloc = BlocProvider.of<CameraBloc>(context);
     _isRecording = false;
-
-    final camera = null;
-    _controller = CameraController(camera, ResolutionPreset.high);
-    _controller.initialize().then((_) {
-      if (!mounted) {
-        return;
-      }
-      setState(() {});
-    });
 
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
@@ -42,10 +46,21 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return Container();
-    }
-    return Stack(
+    return StreamBuilder(
+      stream: _bloc.inited,
+      builder: (context, snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+              return buildIndeterminateProgress();
+          default:
+          if (snapshot.hasError) {
+            return 
+          }
+        }
+        return Container();
+      },
+    );
+    /*return Stack(
       children: [
         Center(
           child: AspectRatio(
@@ -60,7 +75,7 @@ class _CameraScreenState extends State<CameraScreen>
           child: _buildRecordButton(context),
         ),
       ],
-    );
+    );*/
   }
 
   Widget _buildRecordButton(BuildContext context) {
@@ -92,19 +107,7 @@ class _CameraScreenState extends State<CameraScreen>
   }
 
   void _onRecordClick() {
-    checkPermissions().then((status) {
-      if (status != PermissionStatus.granted) {
-        PermissionHandler()
-            .requestPermissions([PermissionGroup.storage]).then((map) {
-          final result = map[PermissionGroup.storage];
-          if (result != PermissionStatus.granted) {
-            print("Can't access storage permission");
-          }
-        });
-      } else {
-        _proceedActionWithCamera();
-      }
-    });
+    _proceedActionWithCamera();
   }
 
   void _proceedActionWithCamera() {
@@ -127,11 +130,6 @@ class _CameraScreenState extends State<CameraScreen>
     _controller?.dispose();
     _animationController?.dispose();
     super.dispose();
-  }
-
-  Future<PermissionStatus> checkPermissions() async {
-    return await PermissionHandler()
-        .checkPermissionStatus(PermissionGroup.storage);
   }
 
   Future<String> startVideoRecording() async {
@@ -157,7 +155,7 @@ class _CameraScreenState extends State<CameraScreen>
     return filePath;
   }
 
-  Future<void> stopVideoRecording() async {
+  stopVideoRecording() async {
     if (!_controller.value.isRecordingVideo) {
       return null;
     }
@@ -166,6 +164,5 @@ class _CameraScreenState extends State<CameraScreen>
     } on CameraException {
       return null;
     }
-    // setCameraResult();
   }
 }

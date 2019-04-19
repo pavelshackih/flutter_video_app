@@ -10,4 +10,9 @@ class PermissionDeniedException implements Exception {
   PermissionDeniedException(this.cause);
 }
 
+class CameraInitException implements Exception {
+  final String message;
+  CameraInitException(this.message);
+}
+
 enum AppPermission { storage, camera, mic }

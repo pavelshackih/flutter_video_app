@@ -34,11 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => CameraScreen()),
+            MaterialPageRoute(builder: (context) => CameraRoot()),
           );
         },
         icon: Icon(Icons.camera),
-        label: Text("Record video"),
+        label: Text("Записать видео"),
       ),
       body: _buildBody(context),
     );
@@ -93,8 +93,7 @@ class _HomeScreenState extends State<HomeScreen> {
         buttonAction: () => _bloc.requestStoragePermission(),
       );
 
-  Widget _buildEmptyScreen(BuildContext context) => 
-  buildListPlaceholder(
+  Widget _buildEmptyScreen(BuildContext context) => buildListPlaceholder(
         context: context,
         icon: FontAwesomeIcons.cameraRetro,
         title: "Список видео пуст",
@@ -103,7 +102,6 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class HomeGrid extends StatelessWidget {
-
   final List<Video> videos;
 
   const HomeGrid({Key key, this.videos}) : super(key: key);
