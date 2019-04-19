@@ -4,9 +4,9 @@ import 'package:flutter_video_app/app.dart';
 import 'dart:async';
 
 class VideoListBloc extends Bloc {
-  PermissionsApi _permissionsApi = PermissionsApi();
-  StorageApi _storageApi = StorageApi();
-  StreamController<List<Video>> _videoListStream = StreamController();
+  final _permissionsApi = PermissionsApi();
+  final _storageApi = StorageApi();
+  final _videoListStream = StreamController<List<Video>>();
 
   VideoListBloc() {
     _load();

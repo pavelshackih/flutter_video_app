@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_video_app/app.dart';
 import 'package:flutter_video_app/bloc/video_list_bloc.dart';
 import 'package:flutter_video_app/screen/camera_screen.dart';
+import 'package:flutter_video_app/utils/common_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HomeRoot extends StatelessWidget {
@@ -45,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    _bloc.dispose();
+    _bloc?.dispose();
     super.dispose();
   }
 
@@ -70,94 +71,43 @@ class _HomeScreenState extends State<HomeScreen> {
         if (list == null || list.isEmpty) {
           return _buildEmptyScreen(context);
         }
+        // TODO build list
         return Container(
           color: Colors.brown,
         );
       case ConnectionState.none:
         return _buildEmptyScreen(context);
       case ConnectionState.waiting:
-        return _buildProgress(context);
+        return buildIndeterminateProgress();
     }
     return null;
   }
 
-  Widget _buildProgress(BuildContext context) {
-    return Container(
-        child: Center(
-      child: CircularProgressIndicator(
-        value: null,
-      ),
-    ));
-  }
+  Widget _buildNoStoragePermissions(BuildContext context) =>
+      buildListPlaceholder(
+        context: context,
+        icon: FontAwesomeIcons.solidFolder,
+        title: "Нет доступа к файловой системе",
+        description: "Предоставьте разрешения для сохранения видео.",
+        buttonText: "Запросить права",
+        buttonAction: () => _bloc.requestStoragePermission(),
+      );
 
-  Widget _buildNoStoragePermissions(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            FontAwesomeIcons.solidFolder,
-            color: Theme.of(context).accentColor,
-            size: 72,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Нет доступа к файловой системе.",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.title,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),
-            child: Text(
-              "Предоставьте разрешения для сохранения видео.",
-              textAlign: TextAlign.center,
-            ),
-          ),
-          FlatButton(
-            child: Text("Запросить права"),
-            onPressed: () {
-              _bloc.requestStoragePermission();
-            },
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _buildEmptyScreen(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Icon(
-            FontAwesomeIcons.cameraRetro,
-            color: Theme.of(context).accentColor,
-            size: 72,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              "Список видео пуст.",
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.title,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 0),
-            child: Text(
-              "Попробуйте для начала записать что-нибудь!",
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget _buildEmptyScreen(BuildContext context) => 
+  buildListPlaceholder(
+        context: context,
+        icon: FontAwesomeIcons.cameraRetro,
+        title: "Список видео пуст",
+        description: "Попробуйте для начала записать что-нибудь!",
+      );
 }
 
 class HomeGrid extends StatelessWidget {
+
+  final List<Video> videos;
+
+  const HomeGrid({Key key, this.videos}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
