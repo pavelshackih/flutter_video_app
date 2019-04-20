@@ -1,11 +1,7 @@
-import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_video_app/api/storage_api.dart';
 import 'package:flutter_video_app/app.dart';
 import 'package:flutter_video_app/bloc/camera_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:flutter_video_app/utils/common_widgets.dart';
 
 class CameraRoot extends StatelessWidget {
@@ -37,7 +33,7 @@ class _CameraScreenState extends State<CameraScreen>
     _isRecording = false;
 
     _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
     final beginColor = _isRecording ? Colors.red : Colors.white;
     final endColor = _isRecording ? Colors.white : Colors.red;
     _colorTween = ColorTween(begin: beginColor, end: endColor)
@@ -51,21 +47,24 @@ class _CameraScreenState extends State<CameraScreen>
       builder: (context, snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
-              return buildIndeterminateProgress();
+            return buildIndeterminateProgress();
           default:
-          if (snapshot.hasError) {
-            return 
-          }
+            if (snapshot.hasError) {
+              return buildCameraError(context);
+            }
+            return buildCameraScreen();
         }
-        return Container();
       },
     );
-    /*return Stack(
+  }
+
+  Widget buildCameraScreen() {
+    return Stack(
       children: [
         Center(
           child: AspectRatio(
-            aspectRatio: _controller.value.aspectRatio,
-            child: CameraPreview(_controller),
+            aspectRatio: _bloc.controller.value.aspectRatio,
+            child: CameraPreview(_bloc.controller),
           ),
         ),
         Positioned(
@@ -75,7 +74,20 @@ class _CameraScreenState extends State<CameraScreen>
           child: _buildRecordButton(context),
         ),
       ],
-    );*/
+    );
+  }
+
+  Widget buildCameraError(BuildContext context) {
+    return Scaffold(
+      body: buildListPlaceholder(
+        context: context,
+        icon: Icons.error_outline,
+        title: "Ошибка при инициализации камеры",
+        description: "Возникла проблема при получении доступа к камере.",
+        buttonText: "Назад",
+        buttonAction: () => Navigator.pop(context),
+      ),
+    );
   }
 
   Widget _buildRecordButton(BuildContext context) {
@@ -113,9 +125,7 @@ class _CameraScreenState extends State<CameraScreen>
   void _proceedActionWithCamera() {
     _isRecording = !_isRecording;
     if (_isRecording) {
-      startVideoRecording().then((path) {
-        print("Start recording in path $path");
-      });
+      _bloc.startRecord();
       _animationController.forward();
     } else {
       _animationController.reverse();
@@ -127,42 +137,10 @@ class _CameraScreenState extends State<CameraScreen>
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _bloc?.dispose();
     _animationController?.dispose();
     super.dispose();
   }
 
-  Future<String> startVideoRecording() async {
-    if (!_controller.value.isInitialized) {
-      return null;
-    }
-
-    final currentTime = DateTime.now().millisecondsSinceEpoch.toString();
-    final extDir = await getExternalStorageDirectory();
-    final dirPath = '${extDir.path}/${StorageApi.SAVE_DIR}/';
-    await Directory(dirPath).create(recursive: true);
-    final filePath = '$dirPath/$currentTime.mp4';
-    if (_controller.value.isRecordingVideo) {
-      return null;
-    }
-
-    try {
-      print(filePath);
-      await _controller.startVideoRecording(filePath);
-    } on CameraException {
-      return null;
-    }
-    return filePath;
-  }
-
-  stopVideoRecording() async {
-    if (!_controller.value.isRecordingVideo) {
-      return null;
-    }
-    try {
-      await _controller.stopVideoRecording();
-    } on CameraException {
-      return null;
-    }
-  }
+  stopVideoRecording() async {}
 }

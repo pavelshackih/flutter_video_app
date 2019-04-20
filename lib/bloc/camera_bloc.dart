@@ -25,11 +25,27 @@ class CameraBloc extends Bloc {
     _cameras = await availableCameras();
     if (_cameras == null || _cameras.isEmpty) {
       _streamController.addError(CameraInitException("Can't get cameras description!"));
+      return;
     }
     _cameraController = CameraController(_cameras.first, PRESET);
     await _cameraController.initialize();
     _streamController.add(null);
   }
+
+  void startRecord() async {
+    final path = await _storageApi.getNewVideoFilePath();
+    print("Recording video: $path");
+    await _cameraController.startVideoRecording(path);
+  }
+
+  void stopRecording() async {
+    if (!_cameraController.value.isRecordingVideo) {
+      return;
+    }
+    await _cameraController.stopVideoRecording();
+  }
+
+  CameraController get controller => _cameraController;
 
   @override
   void dispose() async {

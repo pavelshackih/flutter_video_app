@@ -1,8 +1,18 @@
+import 'dart:io';
+
 class Video {
   final String pathToThumbnail;
   final String pathToVideo;
-
-  const Video({this.pathToThumbnail, this.pathToVideo});
+  final File thumbnailFile;
+  final File videoFile;
+  final String created;
+  const Video({
+    this.pathToThumbnail,
+    this.pathToVideo,
+    this.thumbnailFile,
+    this.videoFile,
+    this.created,
+  });
 }
 
 class PermissionDeniedException implements Exception {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_video_app/app.dart';
 import 'package:flutter_video_app/bloc/video_list_bloc.dart';
 import 'package:flutter_video_app/screen/camera_screen.dart';
+import 'package:flutter_video_app/screen/video_screen.dart';
 import 'package:flutter_video_app/utils/common_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -71,10 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (list == null || list.isEmpty) {
           return _buildEmptyScreen(context);
         }
-        // TODO build list
-        return Container(
-          color: Colors.brown,
-        );
+        return HomeGrid(videos: list);
       case ConnectionState.none:
         return _buildEmptyScreen(context);
       case ConnectionState.waiting:
@@ -111,13 +109,61 @@ class HomeGrid extends StatelessWidget {
     return Container(
       child: GridView.count(
         crossAxisCount: 2,
-        children: [
-          Container(
-            width: 32,
-            height: 32,
-            color: Colors.red,
-          )
-        ],
+        children: videos.map((item) => HomeGridItem(video: item)).toList(),
+      ),
+    );
+  }
+}
+
+class HomeGridItem extends StatelessWidget {
+  final Video video;
+
+  const HomeGridItem({Key key, this.video}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Card(
+        margin: EdgeInsets.all(8),
+        elevation: 8,
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(4)),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => VideoRoot(
+                          video: video,
+                        )),
+              );
+            },
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.file(
+                  video.thumbnailFile,
+                  fit: BoxFit.fitWidth,
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    color: Colors.black54,
+                    child: Text(
+                      video.created,
+                      style: Theme.of(context).textTheme.subtitle.apply(
+                            color: Colors.white,
+                          ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
