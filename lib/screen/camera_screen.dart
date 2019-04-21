@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_video_app/app.dart';
 import 'package:flutter_video_app/bloc/camera_bloc.dart';
 import 'package:flutter_video_app/utils/common_widgets.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CameraRoot extends StatelessWidget {
   @override
@@ -19,25 +20,15 @@ class CameraScreen extends StatefulWidget {
   _CameraScreenState createState() => _CameraScreenState();
 }
 
-class _CameraScreenState extends State<CameraScreen>
-    with SingleTickerProviderStateMixin {
+class _CameraScreenState extends State<CameraScreen> {
   CameraBloc _bloc;
   bool _isRecording;
-  AnimationController _animationController;
-  Animation _colorTween;
 
   @override
   void initState() {
     super.initState();
     _bloc = BlocProvider.of<CameraBloc>(context);
     _isRecording = false;
-
-    _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 100));
-    final beginColor = _isRecording ? Colors.red : Colors.white;
-    final endColor = _isRecording ? Colors.white : Colors.red;
-    _colorTween = ColorTween(begin: beginColor, end: endColor)
-        .animate(_animationController);
   }
 
   @override
@@ -51,29 +42,28 @@ class _CameraScreenState extends State<CameraScreen>
           default:
             if (snapshot.hasError) {
               return buildCameraError(context);
+            } else {
+              return buildCameraScreen(context);
             }
-            return buildCameraScreen();
         }
       },
     );
   }
 
-  Widget buildCameraScreen() {
-    return Stack(
-      children: [
-        Center(
-          child: AspectRatio(
-            aspectRatio: _bloc.controller.value.aspectRatio,
-            child: CameraPreview(_bloc.controller),
-          ),
+  Widget buildCameraScreen(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Theme.of(context).primaryColor,
+      floatingActionButton: FloatingActionButton(
+        child: Icon(_isRecording ? FontAwesomeIcons.stop : FontAwesomeIcons.video),
+        onPressed: () => _onRecordClick(),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      body: Center(
+        child: AspectRatio(
+          aspectRatio: _bloc.controller.value.aspectRatio,
+          child: CameraPreview(_bloc.controller),
         ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: _buildRecordButton(context),
-        ),
-      ],
+      ),
     );
   }
 
@@ -90,57 +80,20 @@ class _CameraScreenState extends State<CameraScreen>
     );
   }
 
-  Widget _buildRecordButton(BuildContext context) {
-    return Container(
-      color: Colors.black26,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: AnimatedBuilder(
-            animation: _animationController,
-            builder: (context, child) {
-              return FlatButton(
-                padding: EdgeInsets.all(8),
-                onPressed: () {
-                  _onRecordClick();
-                },
-                shape: CircleBorder(),
-                child: Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    color: _colorTween.value,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              );
-            }),
-      ),
-    );
-  }
-
-  void _onRecordClick() {
-    _proceedActionWithCamera();
-  }
-
-  void _proceedActionWithCamera() {
+  void _onRecordClick() async {
     _isRecording = !_isRecording;
     if (_isRecording) {
-      _bloc.startRecord();
-      _animationController.forward();
+      await _bloc.startRecord();
+      setState(() {});
     } else {
-      _animationController.reverse();
-      stopVideoRecording().then((value) {
-        print("Stop camera recording");
-      });
+      await _bloc.stopRecording();
+      Navigator.pop(context, true);
     }
   }
 
   @override
   void dispose() {
     _bloc?.dispose();
-    _animationController?.dispose();
     super.dispose();
   }
-
-  stopVideoRecording() async {}
 }

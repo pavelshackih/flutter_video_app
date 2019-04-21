@@ -32,13 +32,13 @@ class CameraBloc extends Bloc {
     _streamController.add(null);
   }
 
-  void startRecord() async {
+  Future<void> startRecord() async {
     final path = await _storageApi.getNewVideoFilePath();
     print("Recording video: $path");
     await _cameraController.startVideoRecording(path);
   }
 
-  void stopRecording() async {
+  Future<void> stopRecording() async {
     if (!_cameraController.value.isRecordingVideo) {
       return;
     }
@@ -49,7 +49,7 @@ class CameraBloc extends Bloc {
 
   @override
   void dispose() async {
-    await _streamController.close();
     await _cameraController?.dispose();
+    await _streamController.close();
   }
 }

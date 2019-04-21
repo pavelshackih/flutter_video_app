@@ -48,21 +48,29 @@ class StorageApi {
     final result = List<Video>();
     final videoDir = await getVideoDir();
     for (final file in files) {
-      final thumbnail = await Thumbnails.getThumbnail(
-        videoFile: file.path,
-        quality: 50,
-        imageType: ThumbFormat.PNG,
-        thumbnailFolder: videoDir.path,
-      );
-      result.add(
-        Video(
-          pathToThumbnail: thumbnail,
-          pathToVideo: file.path,
-          thumbnailFile: File(thumbnail),
-          videoFile: file,
-          created: _getCreateTimeFromFileName(file.path),
-        ),
-      );
+      String thumbnail;
+      try {
+        thumbnail = await Thumbnails.getThumbnail(
+          videoFile: file.path,
+          quality: 50,
+          imageType: ThumbFormat.PNG,
+          thumbnailFolder: videoDir.path,
+        );
+      } on Exception {
+        print("Can't get preview for $file");
+        continue;
+      }
+      if (thumbnail != null) {
+        result.add(
+          Video(
+            pathToThumbnail: thumbnail,
+            pathToVideo: file.path,
+            thumbnailFile: File(thumbnail),
+            videoFile: file,
+            created: _getCreateTimeFromFileName(file.path),
+          ),
+        );
+      }
     }
     return result;
   }

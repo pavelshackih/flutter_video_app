@@ -32,11 +32,14 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Text("Video App"),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          final result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CameraRoot()),
           );
+          if (result != null && result) {
+            _bloc.onRefresh();
+          }
         },
         icon: Icon(Icons.camera),
         label: Text("Записать видео"),
@@ -107,7 +110,15 @@ class HomeGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      decoration: BoxDecoration(
+          gradient: LinearGradient(
+        colors: [Colors.white, Colors.black],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      )),
       child: GridView.count(
+        padding: EdgeInsets.only(bottom: 72),
+        physics: BouncingScrollPhysics(),
         crossAxisCount: 2,
         children: videos.map((item) => HomeGridItem(video: item)).toList(),
       ),
@@ -122,46 +133,49 @@ class HomeGridItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final bloc = BlocProvider.of<VideoListBloc>(context);
+    return GestureDetector(
+      onTap: () async {
+        final result = await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VideoRoot(
+                  video: video,
+                ),
+          ),
+        );
+        if (result != null && result) {
+          bloc.onRefresh();
+        }
+      },
       child: Card(
         margin: EdgeInsets.all(8),
         elevation: 8,
         child: ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(4)),
-          child: InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => VideoRoot(
-                          video: video,
-                        )),
-              );
-            },
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.file(
-                  video.thumbnailFile,
-                  fit: BoxFit.fitWidth,
-                ),
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    color: Colors.black54,
-                    child: Text(
-                      video.created,
-                      style: Theme.of(context).textTheme.subtitle.apply(
-                            color: Colors.white,
-                          ),
-                      textAlign: TextAlign.center,
-                    ),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.file(
+                video.thumbnailFile,
+                fit: BoxFit.fitWidth,
+              ),
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: Colors.black54,
+                  child: Text(
+                    video.created,
+                    style: Theme.of(context).textTheme.subtitle.apply(
+                          color: Colors.white,
+                        ),
+                    textAlign: TextAlign.center,
                   ),
-                )
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
